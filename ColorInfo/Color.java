@@ -1,0 +1,1 @@
+public enum Color {MAGENTA, WHITE, CYAN, ORANGE} //random color
