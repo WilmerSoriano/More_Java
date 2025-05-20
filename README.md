@@ -92,6 +92,6 @@ ant clean
 
 ## 📬 Contact
 
-Owner: Wilmer Soriano
+Owner: Wilmer Soriano | 
 Email: official_Wilmer.2020@outlook.com
 
