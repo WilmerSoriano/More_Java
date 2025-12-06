@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>TestEndToEnd.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">TestEndToEnd (3) (Apr 27, 2025 4:22:52 PM)</a> &gt; <a href="../../index.html" class="el_group">src</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">TestEndToEnd.java</span></div><h1>TestEndToEnd.java</h1><pre class="source lang-java linenums">import static org.junit.jupiter.api.Assertions.*;
+import java.io.*;
+
+//import java.io.BufferedReader;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
+import java.io.InputStream;
+import java.io.PrintStream;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L16">class TestEndToEnd {</span>
+	
+<span class="fc" id="L18">	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();</span>
+<span class="fc" id="L19">    private final PrintStream originalOut = System.out;</span>
+<span class="fc" id="L20">    private final InputStream originalIn = System.in;</span>
+    //private Printtokens printtoken;
+    
+    @BeforeEach
+    public void setUpStreams() {
+    	//printtoken = new Printtokens();
+<span class="fc" id="L26">        System.setOut(new PrintStream(outContent));</span>
+<span class="fc" id="L27">    }</span>
+
+    @AfterEach
+    public void restoreStreams() {
+<span class="fc" id="L31">        System.setOut(originalOut);</span>
+<span class="fc" id="L32">        System.setIn(originalIn);</span>
+<span class="fc" id="L33">    }</span>
+    // This test will mash all Scenarios from 1-10 into 1 single Method.(Full Coverage)
+    @Test
+    void testAllEndToEndScenarios() throws IOException {
+<span class="fc" id="L37">        InputStream inputStream = getClass().getResourceAsStream(&quot;/testFile.txt&quot;);</span>
+<span class="fc" id="L38">        assertNotNull(inputStream, &quot;testFile.txt not found&quot;);</span>
+        
+<span class="fc" id="L40">        byte[] bytes = inputStream.readAllBytes();</span>
+<span class="fc" id="L41">        String input = new String(bytes);</span>
+        
+<span class="fc" id="L43">        System.setIn(new ByteArrayInputStream(input.getBytes()));</span>
+
+        // Capture output
+<span class="fc" id="L46">        ByteArrayOutputStream outContent = new ByteArrayOutputStream();</span>
+<span class="fc" id="L47">        System.setOut(new PrintStream(outContent));</span>
+
+<span class="fc" id="L49">        Printtokens.main(new String[0]);</span>
+
+<span class="fc" id="L51">        String[] expectedOutputs = {</span>
+<span class="fc" id="L52">            &quot;keyword,\&quot;and\&quot;.&quot;,</span>
+<span class="fc" id="L53">            &quot;keyword,\&quot;or\&quot;.&quot;,</span>
+<span class="fc" id="L54">            &quot;keyword,\&quot;if\&quot;.&quot;,</span>
+<span class="fc" id="L55">            &quot;keyword,\&quot;xor\&quot;.&quot;,</span>
+<span class="fc" id="L56">            &quot;keyword,\&quot;lambda\&quot;.&quot;,</span>
+<span class="fc" id="L57">            &quot;keyword,\&quot;=&gt;\&quot;.&quot;,</span>
+<span class="fc" id="L58">            &quot;lparen.&quot;,</span>
+<span class="fc" id="L59">            &quot;rparen.&quot;,</span>
+<span class="fc" id="L60">            &quot;lsquare.&quot;,</span>
+<span class="fc" id="L61">            &quot;rsquare.&quot;,</span>
+<span class="fc" id="L62">            &quot;bquote.&quot;,</span>
+<span class="fc" id="L63">            &quot;quote.&quot;,</span>
+<span class="fc" id="L64">            &quot;comma.&quot;,</span>
+<span class="fc" id="L65">            &quot;identifier,\&quot;x\&quot;.&quot;,</span>
+<span class="fc" id="L66">            &quot;identifier,\&quot;x1\&quot;.&quot;,</span>
+<span class="fc" id="L67">            &quot;error,\&quot;1x\&quot;.&quot;,</span>
+<span class="fc" id="L68">            &quot;error,\&quot;x$\&quot;.&quot;,</span>
+<span class="fc" id="L69">            &quot;numeric,123.&quot;,</span>
+<span class="fc" id="L70">            &quot;error,\&quot;12a\&quot;.&quot;,</span>
+<span class="fc" id="L71">            &quot;string,\&quot;hello\&quot;.&quot;,</span>
+<span class="fc" id="L72">            &quot;error,\&quot;\&quot;hello\&quot;.&quot;, // Unterminated string</span>
+<span class="fc" id="L73">            &quot;character,\&quot;a\&quot;.&quot;,   // #a</span>
+<span class="fc" id="L74">            &quot;identifier,\&quot;a\&quot;.&quot;,  // a</span>
+<span class="fc" id="L75">            &quot;error,\&quot;#1\&quot;.&quot;,      // #1</span>
+<span class="fc" id="L76">            &quot;error,\&quot;$\&quot;.&quot;        // $</span>
+        };
+
+<span class="fc" id="L79">        String actualOutput = outContent.toString().replaceAll(&quot;\r\n&quot;, &quot;\n&quot;);</span>
+<span class="fc" id="L80">        String[] actualOutputs = actualOutput.split(&quot;\n&quot;);</span>
+
+<span class="fc" id="L82">        assertEquals(expectedOutputs.length, actualOutputs.length, &quot;Line count mismatch.&quot;);</span>
+
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        for (int i = 0; i &lt; expectedOutputs.length; i++) {</span>
+<span class="fc" id="L85">            assertEquals(expectedOutputs[i], actualOutputs[i].trim(), &quot;Mismatch at line &quot; + (i + 1));</span>
+        }
+<span class="fc" id="L87">    }</span>
+
+    // Below are other Test Coverage not covered by Full.
+    @Test
+    void testEndToEnd11() throws IOException {
+<span class="fc" id="L92">        File tempFile = File.createTempFile(&quot;test&quot;, &quot;.txt&quot;);</span>
+<span class="fc" id="L93">        Printtokens.main(new String[]{tempFile.getAbsolutePath()});</span>
+<span class="fc" id="L94">        assertEquals(&quot;&quot;, outContent.toString().trim());</span>
+<span class="fc" id="L95">        tempFile.delete();</span>
+<span class="fc" id="L96">    }</span>
+
+    @Test
+    void testEndToEnd12() throws IOException {
+<span class="fc" id="L100">        File tempFile = File.createTempFile(&quot;test&quot;, &quot;.txt&quot;);</span>
+<span class="fc" id="L101">        try (FileWriter writer = new FileWriter(tempFile)) {</span>
+<span class="fc" id="L102">            writer.write(&quot;456 &quot;);</span>
+        }
+<span class="fc" id="L104">        Printtokens.main(new String[]{tempFile.getAbsolutePath()});</span>
+<span class="fc" id="L105">        assertTrue(outContent.toString().contains(&quot;numeric,456&quot;));</span>
+<span class="fc" id="L106">        tempFile.delete();</span>
+<span class="fc" id="L107">    }</span>
+
+    @Test
+    void testEndToEnd13() throws IOException {
+<span class="fc" id="L111">        File tempFile = File.createTempFile(&quot;test&quot;, &quot;.txt&quot;);</span>
+<span class="fc" id="L112">        try (FileWriter writer = new FileWriter(tempFile)) {</span>
+<span class="fc" id="L113">            writer.write(&quot;,&quot;);</span>
+        }
+<span class="fc" id="L115">        Printtokens.main(new String[]{tempFile.getAbsolutePath()});</span>
+<span class="fc" id="L116">        assertTrue(outContent.toString().contains(&quot;comma.&quot;));</span>
+<span class="fc" id="L117">        tempFile.delete();</span>
+<span class="fc" id="L118">    }</span>
+
+    @Test
+    void testEndToEnd14() throws IOException {
+<span class="fc" id="L122">        File tempFile = File.createTempFile(&quot;test&quot;, &quot;.txt&quot;);</span>
+<span class="fc" id="L123">        try (FileWriter writer = new FileWriter(tempFile)) {</span>
+<span class="fc" id="L124">            writer.write(&quot;\&quot;world\&quot;&quot;);</span>
+        }
+<span class="fc" id="L126">        Printtokens.main(new String[]{tempFile.getAbsolutePath()});</span>
+<span class="fc" id="L127">        assertTrue(outContent.toString().contains(&quot;string,\&quot;world\&quot;&quot;));</span>
+<span class="fc" id="L128">        tempFile.delete();</span>
+<span class="fc" id="L129">    }</span>
+
+    @Test
+    void testEndToEnd15() throws IOException {
+<span class="fc" id="L133">        File tempFile = File.createTempFile(&quot;test&quot;, &quot;.txt&quot;);</span>
+<span class="fc" id="L134">        try (FileWriter writer = new FileWriter(tempFile)) {</span>
+<span class="fc" id="L135">            writer.write(&quot;;file_comment&quot;);</span>
+        }
+<span class="fc" id="L137">        Printtokens.main(new String[]{tempFile.getAbsolutePath()});</span>
+<span class="fc" id="L138">        assertTrue(outContent.toString().contains(&quot;comment,\&quot;;file_comment\&quot;&quot;));</span>
+<span class="fc" id="L139">        tempFile.delete();</span>
+<span class="fc" id="L140">    }</span>
+
+    @Test
+    void testEndToEnd16() {
+<span class="fc" id="L144">        Printtokens.main(new String[]{&quot;arg1&quot;, &quot;arg2&quot;});</span>
+<span class="fc" id="L145">        assertTrue(outContent.toString().contains(&quot;Error! Please give the token stream&quot;));</span>
+<span class="fc" id="L146">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>TestEndToEnd (3) (Apr 27, 2025 4:22:52 PM)</div></body></html>
