@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>UnitTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">UnitTest (1) (Apr 27, 2025 4:18:33 PM)</a> &gt; <a href="../../index.html" class="el_group">src</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">UnitTest.java</span></div><h1>UnitTest.java</h1><pre class="source lang-java linenums">import static org.junit.jupiter.api.Assertions.*;
+import java.io.*;
+
+import java.io.BufferedReader;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
+import java.io.InputStream;
+import java.io.PrintStream;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+//
+<span class="fc" id="L17">class UnitTest {</span>
+	
+<span class="fc" id="L19">	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();</span>
+<span class="fc" id="L20">    private final PrintStream originalOut = System.out;</span>
+<span class="fc" id="L21">    private final InputStream originalIn = System.in;</span>
+    private Printtokens printtoken;
+    
+    @BeforeEach
+    public void setUpStreams() {
+<span class="fc" id="L26">    	printtoken = new Printtokens();</span>
+<span class="fc" id="L27">        System.setOut(new PrintStream(outContent));</span>
+<span class="fc" id="L28">    }</span>
+
+    @AfterEach
+    public void restoreStreams() {
+<span class="fc" id="L32">        System.setOut(originalOut);</span>
+<span class="fc" id="L33">        System.setIn(originalIn);</span>
+<span class="fc" id="L34">    }</span>
+
+	@Test
+	void testOpen_character_stream () throws IOException{ // Without: ...() throws IOException{} cannot open file?
+<span class="fc" id="L38">		System.out.println(&quot;=== Testing: Open_character_stream ===&quot;);</span>
+		
+<span class="fc" id="L40">		System.out.println(&quot;*Start: Path1[1, 2, 4]&quot;);</span>
+<span class="fc" id="L41">		BufferedReader read1  = printtoken.open_character_stream(null);</span>
+<span class="fc" id="L42">		assertNotNull(read1);</span>
+<span class="fc" id="L43">		System.out.println(&quot;*End: Path1&quot;);</span>
+		
+<span class="fc" id="L45">		System.out.println(&quot;**Start: Path2[1,3,4]&quot;);</span>
+<span class="fc" id="L46">		File file = new File(&quot;validFile.txt&quot;);</span>
+		// For every method were going to reopen and close file for best reliability
+<span class="fc" id="L48">		file.deleteOnExit();</span>
+<span class="fc" id="L49">		assertNotNull(printtoken.open_character_stream(file.getAbsolutePath()));</span>
+<span class="fc" id="L50">		System.out.println(&quot;**End: Path2&quot;);</span>
+		
+<span class="fc" id="L52">		System.out.println(&quot;=== Open_character_stream Finished. ===&quot;);</span>
+<span class="fc" id="L53">	}</span>
+
+	@Test
+	void testGet_char() { // Might need, throws IOExce...
+<span class="fc" id="L57">		System.out.println(&quot;=== Testing: Get Char ===&quot;);</span>
+		
+<span class="fc" id="L59">		System.out.println(&quot;*Start: Path [1,2]&quot;);</span>
+<span class="fc" id="L60">		BufferedReader br = new BufferedReader(new StringReader(&quot;&quot;));</span>
+<span class="fc" id="L61">		assertEquals(-1, printtoken.get_char(br));</span>
+<span class="fc" id="L62">		System.out.println(&quot;*End: Path [1,2]&quot;);</span>
+		
+<span class="fc" id="L64">		System.out.println(&quot;=== Get Char Finished. ===&quot;);</span>
+<span class="fc" id="L65">	}</span>
+
+	@Test
+	void testUnget_char() {
+<span class="fc" id="L69">		System.out.println(&quot;=== Testing: Unget Char ===&quot;);</span>
+		
+<span class="fc" id="L71">        System.out.println(&quot;*Start: Path [1,2]&quot;);</span>
+<span class="fc" id="L72">        BufferedReader br = new BufferedReader(new StringReader(&quot;a&quot;));</span>
+<span class="fc" id="L73">        printtoken.get_char(br); </span>
+<span class="fc" id="L74">        assertEquals('a', printtoken.unget_char('a', br));</span>
+<span class="fc" id="L75">        System.out.println(&quot;*End: Path [1,2]&quot;);</span>
+		
+<span class="fc" id="L77">		System.out.println(&quot;=== Unget Char Finished. ===&quot;);</span>
+<span class="fc" id="L78">	}</span>
+
+	@Test
+	void testOpen_token_stream() {
+<span class="fc" id="L82">		System.out.println(&quot;=== Testing: Open Token Stream ===&quot;);</span>
+		
+<span class="fc" id="L84">        System.out.println(&quot;*Start: Path [1,2,4]&quot;);</span>
+<span class="fc" id="L85">        assertNotNull(printtoken.open_token_stream(null));</span>
+<span class="fc" id="L86">        System.out.println(&quot;*End: Path [1,2,4]&quot;);</span>
+        
+<span class="fc" id="L88">        System.out.println(&quot;**Start: Path [1,3,4]&quot;);</span>
+<span class="fc" id="L89">        File file = new File(&quot;validFile.txt&quot;);</span>
+<span class="fc" id="L90">        file.deleteOnExit();</span>
+<span class="fc" id="L91">        assertNotNull(printtoken.open_token_stream(file.getAbsolutePath()));</span>
+<span class="fc" id="L92">        System.out.println(&quot;**End: Path [1,3,4]&quot;);</span>
+        
+<span class="fc" id="L94">		System.out.println(&quot;=== Open Token Stream Finished. ===&quot;);</span>
+<span class="fc" id="L95">	}</span>
+
+	@Test
+	void testGet_token() {
+<span class="fc" id="L99">		System.out.println(&quot;=== Testing: Get Token ===&quot;);</span>
+		
+<span class="fc" id="L101">	    System.out.println(&quot;*Start: Path [1,2]&quot;);</span>
+<span class="fc" id="L102">	    BufferedReader br1 = new BufferedReader(new StringReader(&quot;&quot;));</span>
+<span class="fc" id="L103">	    assertNull(printtoken.get_token(br1));</span>
+<span class="fc" id="L104">	    System.out.println(&quot;*End: Path [1,2]&quot;);</span>
+	    
+<span class="fc" id="L106">	    System.out.println(&quot;*Start: Path [1,3,4,5,6]&quot;);</span>
+<span class="fc" id="L107">	    BufferedReader br2 = new BufferedReader(new StringReader(&quot;123 &quot;));</span>
+<span class="fc" id="L108">	    assertEquals(&quot;123&quot;, printtoken.get_token(br2));</span>
+<span class="fc" id="L109">	    System.out.println(&quot;*End: Path [1,3,4,5,6]&quot;);</span>
+	    
+<span class="fc" id="L111">	    System.out.println(&quot;*Start: Path [1,3,4,5,7,8]&quot;);</span>
+<span class="fc" id="L112">	    BufferedReader br3 = new BufferedReader(new StringReader(&quot;;&quot;));</span>
+<span class="fc" id="L113">	    assertEquals(&quot;;&quot;, printtoken.get_token(br3));</span>
+<span class="fc" id="L114">	    System.out.println(&quot;*End: Path [1,3,4,5,7,8]&quot;);</span>
+	    
+<span class="fc" id="L116">	    System.out.println(&quot;*Start: Path [1,3,4,5,7,9,10,11,12,13,14]&quot;);</span>
+<span class="fc" id="L117">	    BufferedReader br4 = new BufferedReader(new StringReader(&quot;\&quot;hello\&quot;&quot;));</span>
+<span class="fc" id="L118">	    assertEquals(&quot;\&quot;hello\&quot;&quot;, printtoken.get_token(br4));</span>
+<span class="fc" id="L119">	    System.out.println(&quot;*End: Path [1,3,4,5,7,9,10,11,12,13,14]&quot;);</span>
+	    
+<span class="fc" id="L121">	    System.out.println(&quot;*Start: Path [1,3,4,5,7,9,10,11,12,13,15,16,18,19,20]&quot;);</span>
+<span class="fc" id="L122">	    BufferedReader br5 = new BufferedReader(new StringReader(&quot;;comment&quot;));</span>
+<span class="fc" id="L123">	    assertEquals(&quot;;comment&quot;, printtoken.get_token(br5));</span>
+<span class="fc" id="L124">	    System.out.println(&quot;*End: Path [1,3,4,5,7,9,10,11,12,13,15,16,18,19,20]&quot;);</span>
+	    
+<span class="fc" id="L126">	    System.out.println(&quot;*Start: Path [1,3,4,5,7,9,10,11,12,13,15,16,17,19,21,22]&quot;);</span>
+<span class="fc" id="L127">	    BufferedReader br6 = new BufferedReader(new StringReader(&quot;x&quot;));</span>
+<span class="fc" id="L128">	    assertEquals(&quot;x&quot;, printtoken.get_token(br6));</span>
+<span class="fc" id="L129">	    System.out.println(&quot;*End: Path [1,3,4,5,7,9,10,11,12,13,15,16,17,19,21,22]&quot;);</span>
+	    
+<span class="fc" id="L131">	    System.out.println(&quot;*Start: Path [1,3,4,5,7,9,10,11,12,13,15,16,17,19,21,23,25]&quot;);</span>
+<span class="fc" id="L132">	    BufferedReader br7 = new BufferedReader(new StringReader(&quot;12a&quot;));</span>
+<span class="fc" id="L133">	    assertEquals(&quot;12a&quot;, printtoken.get_token(br7));</span>
+<span class="fc" id="L134">	    System.out.println(&quot;*End: Path [1,3,4,5,7,9,10,11,12,13,15,16,17,19,21,23,25]&quot;);</span>
+        
+<span class="fc" id="L136">		System.out.println(&quot;=== Get Token Finished. ===&quot;);</span>
+<span class="fc" id="L137">	}</span>
+
+	@Test
+	void testIs_token_end() {
+<span class="fc" id="L141">		System.out.println(&quot;=== Testing: Is Token End ===&quot;);</span>
+		
+<span class="fc" id="L143">		System.out.println(&quot;*Start: Path[1,2]&quot;);</span>
+<span class="fc" id="L144">		assertTrue(Printtokens.is_token_end(0, -1));</span>
+<span class="fc" id="L145">		System.out.println(&quot;*End: Path[1,2]&quot;);</span>
+		
+<span class="fc" id="L147">        System.out.println(&quot;**Start: Path [1,3,4,5]&quot;);</span>
+<span class="fc" id="L148">        assertTrue(Printtokens.is_token_end(1, (int)'&quot;'));</span>
+<span class="fc" id="L149">        System.out.println(&quot;**End: Path [1,3,4,5]&quot;);</span>
+<span class="fc" id="L150">		System.out.println(&quot;=== is Token End Finished. ===&quot;);</span>
+<span class="fc" id="L151">	}</span>
+
+	@Test
+	void testToken_type() throws IOException {
+<span class="fc" id="L155">		System.out.println(&quot;=== Testing: Token type ===&quot;);</span>
+		
+<span class="fc" id="L157">        System.out.println(&quot;*Start: Path [1,2]&quot;);</span>
+<span class="fc" id="L158">        assertEquals(Printtokens.keyword, Printtokens.token_type(&quot;if&quot;));</span>
+<span class="fc" id="L159">        System.out.println(&quot;*End: Path [1,2]&quot;);</span>
+        
+<span class="fc" id="L161">        System.out.println(&quot;**Start: Path [1,3,5,7,9,11,13,14,15]&quot;);</span>
+<span class="fc" id="L162">        assertEquals(Printtokens.error, Printtokens.token_type(&quot;$&quot;));</span>
+<span class="fc" id="L163">        System.out.println(&quot;**End: Path [1,3,5,7,9,11,13,14,15]&quot;);</span>
+        
+<span class="fc" id="L165">		System.out.println(&quot;=== Token Type Finished. ===&quot;);</span>
+<span class="fc" id="L166">	}</span>
+
+	@Test
+	void testPrint_token() {
+<span class="fc" id="L170">		System.out.println(&quot;=== Testing: Print Token ===&quot;);</span>
+		
+<span class="fc" id="L172">        System.out.println(&quot;*Start: Path [1,2]&quot;);</span>
+<span class="fc" id="L173">        printtoken.print_token(&quot;if&quot;);</span>
+<span class="fc" id="L174">        assertTrue(outContent.toString().contains(&quot;keyword,\&quot;if\&quot;&quot;));</span>
+<span class="fc" id="L175">        System.out.println(&quot;*End: Path [1,2]&quot;);</span>
+        
+<span class="fc" id="L177">        System.out.println(&quot;*Start: Path [1,3]&quot;);</span>
+<span class="fc" id="L178">        printtoken.print_token(&quot;(&quot;);</span>
+<span class="fc" id="L179">        assertTrue(outContent.toString().contains(&quot;lparen.&quot;));</span>
+<span class="fc" id="L180">        System.out.println(&quot;*End: Path [1,3]&quot;);</span>
+        
+<span class="fc" id="L182">        System.out.println(&quot;*Start: Path [1,4]&quot;);</span>
+<span class="fc" id="L183">        printtoken.print_token(&quot;varName&quot;);</span>
+<span class="fc" id="L184">        assertTrue(outContent.toString().contains(&quot;identifier,\&quot;varName\&quot;&quot;));</span>
+<span class="fc" id="L185">        System.out.println(&quot;*End: Path [1,4]&quot;);</span>
+        
+<span class="fc" id="L187">        System.out.println(&quot;*Start: Path [1,5]&quot;);</span>
+<span class="fc" id="L188">        printtoken.print_token(&quot;12345&quot;);</span>
+<span class="fc" id="L189">        assertTrue(outContent.toString().contains(&quot;numeric,12345&quot;));</span>
+<span class="fc" id="L190">        System.out.println(&quot;*End: Path [1,5]&quot;);</span>
+        
+<span class="fc" id="L192">        System.out.println(&quot;*Start: Path [1,6]&quot;);</span>
+<span class="fc" id="L193">        printtoken.print_token(&quot;\&quot;hello\&quot;&quot;);</span>
+<span class="fc" id="L194">        assertTrue(outContent.toString().contains(&quot;string,\&quot;hello\&quot;&quot;));</span>
+<span class="fc" id="L195">        System.out.println(&quot;*End: Path [1,6]&quot;);</span>
+        
+<span class="fc" id="L197">        System.out.println(&quot;*Start: Path [1,7]&quot;);</span>
+<span class="fc" id="L198">        printtoken.print_token(&quot;#a&quot;);</span>
+<span class="fc" id="L199">        assertTrue(outContent.toString().contains(&quot;character,\&quot;a\&quot;&quot;));</span>
+<span class="fc" id="L200">        System.out.println(&quot;*End: Path [1,7]&quot;);</span>
+        
+<span class="fc" id="L202">        System.out.println(&quot;*Start: Path [1,8]&quot;);</span>
+<span class="fc" id="L203">        printtoken.print_token(&quot;;this is a comment&quot;);</span>
+<span class="fc" id="L204">        assertTrue(outContent.toString().contains(&quot;comment,\&quot;;this is a comment\&quot;&quot;));</span>
+<span class="fc" id="L205">        System.out.println(&quot;*End: Path [1,8]&quot;);</span>
+        
+<span class="fc" id="L207">        System.out.println(&quot;*Start: Path [1,9]&quot;);</span>
+<span class="fc" id="L208">        printtoken.print_token(&quot;$&quot;);</span>
+<span class="fc" id="L209">        assertTrue(outContent.toString().contains(&quot;error,\&quot;$\&quot;&quot;));</span>
+<span class="fc" id="L210">        System.out.println(&quot;*End: Path [1,9]&quot;);</span>
+		
+<span class="fc" id="L212">		System.out.println(&quot;=== Print Token Finished. ===&quot;);</span>
+<span class="fc" id="L213">	}</span>
+
+	@Test
+	void testIs_comment() {
+<span class="fc" id="L217">		System.out.println(&quot;=== Testing: Is Comment ===&quot;);</span>
+		
+<span class="fc" id="L219">        System.out.println(&quot;*Start: Path [1,2]&quot;);</span>
+<span class="fc" id="L220">        assertTrue(Printtokens.is_comment(&quot;;comment&quot;));</span>
+<span class="fc" id="L221">        System.out.println(&quot;*End: Path [1,2]&quot;);</span>
+        
+<span class="fc" id="L223">		System.out.println(&quot;=== Is Comment Finished. ===&quot;);</span>
+<span class="fc" id="L224">	}</span>
+
+	@Test
+	void testIs_keyword() {
+<span class="fc" id="L228">		System.out.println(&quot;=== Testing: Is Keyword ===&quot;);</span>
+		
+<span class="fc" id="L230">		System.out.println(&quot;*Start: Path1 [1,2] &quot;);</span>
+<span class="fc" id="L231">		assertTrue(Printtokens.is_keyword(&quot;if&quot;));</span>
+<span class="fc" id="L232">		System.out.println(&quot;*End: Path1 [1,2]&quot;);</span>
+		
+<span class="fc" id="L234">		System.out.println(&quot;**Start: Path2[1,3]&quot;);</span>
+<span class="fc" id="L235">		assertFalse(Printtokens.is_keyword(&quot;foo&quot;));</span>
+<span class="fc" id="L236">		System.out.println(&quot;**End: Path2[1,3]&quot;);</span>
+		
+<span class="fc" id="L238">		System.out.println(&quot;=== Is Keyword Finished. ===&quot;);</span>
+<span class="fc" id="L239">	}</span>
+
+	@Test
+	void testIs_char_constant() {		
+<span class="fc" id="L243">		System.out.println(&quot;=== Testing: Is Char Constant ===&quot;);</span>
+		
+<span class="fc" id="L245">        System.out.println(&quot;*Start: Path [1,2]&quot;);</span>
+<span class="fc" id="L246">        assertTrue(Printtokens.is_char_constant(&quot;#a&quot;));</span>
+<span class="fc" id="L247">        System.out.println(&quot;*End: Path [1,2]&quot;);</span>
+        
+        
+<span class="fc" id="L250">		System.out.println(&quot;=== Is Char Constant Finished. ===&quot;);</span>
+<span class="fc" id="L251">	}</span>
+
+	@Test
+	void testIs_num_constant() {
+<span class="fc" id="L255">		System.out.println(&quot;=== Testing: Is Num Constant ===&quot;);</span>
+<span class="fc" id="L256">		System.out.println(&quot;*Path1: Start&quot;);</span>
+<span class="fc" id="L257">		assertTrue(Printtokens.is_num_constant(&quot;123&quot;));</span>
+<span class="fc" id="L258">		System.out.println(&quot;*Path1: End&quot;);</span>
+		
+<span class="fc" id="L260">		System.out.println(&quot;**Path2: Start(invalid)&quot;);</span>
+<span class="fc" id="L261">		assertFalse(Printtokens.is_num_constant(&quot;12a&quot;));</span>
+<span class="fc" id="L262">		System.out.println(&quot;**Path2: End&quot;);</span>
+		
+<span class="fc" id="L264">		System.out.println(&quot;=== Is Num Constant Finished. ===&quot;);</span>
+<span class="fc" id="L265">	}</span>
+
+	@Test
+	void testIs_str_constant() {
+<span class="fc" id="L269">		System.out.println(&quot;=== Testing: Is Str Constant ===&quot;);</span>
+        
+<span class="fc" id="L271">		System.out.println(&quot;*Start: Path [1,7]&quot;);</span>
+<span class="fc" id="L272">        assertTrue(Printtokens.is_str_constant(&quot;\&quot;hello\&quot;&quot;));</span>
+<span class="fc" id="L273">        System.out.println(&quot;*End: Path [1,7]&quot;);</span>
+        
+<span class="fc" id="L275">		System.out.println(&quot;=== Is Str Constant Finished. ===&quot;);</span>
+<span class="fc" id="L276">	}</span>
+
+	@Test
+	void testIs_identifier() {
+<span class="fc" id="L280">		System.out.println(&quot;=== Testing: Is Identifier ===&quot;);</span>
+		
+<span class="fc" id="L282">        System.out.println(&quot;*Start: Path [1,7]&quot;);</span>
+<span class="fc" id="L283">        assertTrue(Printtokens.is_identifier(&quot;x1&quot;));</span>
+<span class="fc" id="L284">        System.out.println(&quot;*End: Path [1,7]&quot;);</span>
+        
+        
+<span class="fc" id="L287">		System.out.println(&quot;=== Is Identifier Finished. ===&quot;);</span>
+<span class="fc" id="L288">	}</span>
+
+	@Test
+	void testPrint_spec_symbol() {
+<span class="fc" id="L292">		System.out.println(&quot;=== Testing: Print Spec Symbol ===&quot;);</span>
+        
+<span class="fc" id="L294">		System.out.println(&quot;*Start: Path [1,2]&quot;);</span>
+<span class="fc" id="L295">        Printtokens.print_spec_symbol(&quot;(&quot;);</span>
+<span class="fc" id="L296">        assertTrue(outContent.toString().contains(&quot;lparen.\n&quot;));</span>
+<span class="fc" id="L297">        System.out.println(&quot;*End: Path [1,2]&quot;);</span>
+        
+<span class="fc" id="L299">        System.out.println(&quot;**Start: Path [1,3,4]&quot;);</span>
+<span class="fc" id="L300">        Printtokens.print_spec_symbol(&quot;)&quot;);</span>
+<span class="fc" id="L301">        assertTrue(outContent.toString().contains(&quot;rparen.\n&quot;));</span>
+<span class="fc" id="L302">        System.out.println(&quot;**End: Path [1,3,4]&quot;);</span>
+
+<span class="fc" id="L304">        System.out.println(&quot;***Start: Path [1,3,5,6]&quot;);</span>
+<span class="fc" id="L305">        Printtokens.print_spec_symbol(&quot;[&quot;);</span>
+<span class="fc" id="L306">        assertTrue(outContent.toString().contains(&quot;lsquare.\n&quot;));</span>
+<span class="fc" id="L307">        System.out.println(&quot;***End: Path [1,3,5,6]&quot;);</span>
+
+<span class="fc" id="L309">        System.out.println(&quot;****Start: Path [1,3,5,7,8]&quot;);</span>
+<span class="fc" id="L310">        Printtokens.print_spec_symbol(&quot;]&quot;);</span>
+<span class="fc" id="L311">        assertTrue(outContent.toString().contains(&quot;rsquare.\n&quot;));</span>
+<span class="fc" id="L312">        System.out.println(&quot;****End: Path [1,3,5,7,8]&quot;);</span>
+
+<span class="fc" id="L314">        System.out.println(&quot;*****Start: Path [1,3,5,7,9,10]&quot;);</span>
+<span class="fc" id="L315">        Printtokens.print_spec_symbol(&quot;'&quot;);</span>
+<span class="fc" id="L316">        assertTrue(outContent.toString().contains(&quot;quote.\n&quot;));</span>
+<span class="fc" id="L317">        System.out.println(&quot;*****End: Path [1,3,5,7,9,10]&quot;);</span>
+
+<span class="fc" id="L319">        System.out.println(&quot;******Start: Path [1,3,5,7,9,11,12]&quot;);</span>
+<span class="fc" id="L320">        Printtokens.print_spec_symbol(&quot;`&quot;);</span>
+<span class="fc" id="L321">        assertTrue(outContent.toString().contains(&quot;bquote.\n&quot;));</span>
+<span class="fc" id="L322">        System.out.println(&quot;******End: Path [1,3,5,7,9,11,12]&quot;);</span>
+
+<span class="fc" id="L324">        System.out.println(&quot;*******Start: Path [1,3,5,7,9,11,13,14]&quot;);</span>
+<span class="fc" id="L325">        Printtokens.print_spec_symbol(&quot;,&quot;);</span>
+<span class="fc" id="L326">        assertTrue(outContent.toString().contains(&quot;comma.\n&quot;));</span>
+<span class="fc" id="L327">        System.out.println(&quot;*******End: Path [1,3,5,7,9,11,13,14]&quot;);</span>
+        
+<span class="fc" id="L329">		System.out.println(&quot;=== Print Spec Symbol Finished. ===&quot;);</span>
+<span class="fc" id="L330">	}</span>
+
+	@Test
+	void testIs_spec_symbol() {
+<span class="fc" id="L334">		System.out.println(&quot;=== Testing: Is Spec Symbol ===&quot;);</span>
+        
+<span class="fc" id="L336">		System.out.println(&quot;*Start: Path [1,2]&quot;);</span>
+<span class="fc" id="L337">        assertTrue(Printtokens.is_spec_symbol('('));</span>
+<span class="fc" id="L338">        System.out.println(&quot;*End: Path [1,2]&quot;);</span>
+        
+<span class="fc" id="L340">        System.out.println(&quot;*Start: Path [1,3,4]&quot;);</span>
+<span class="fc" id="L341">        assertTrue(Printtokens.is_spec_symbol(')'));</span>
+<span class="fc" id="L342">        System.out.println(&quot;*End: Path [1,3,4]&quot;);</span>
+
+<span class="fc" id="L344">        System.out.println(&quot;*Start: Path [1,3,5,6]&quot;);</span>
+<span class="fc" id="L345">        assertTrue(Printtokens.is_spec_symbol('['));</span>
+<span class="fc" id="L346">        System.out.println(&quot;*End: Path [1,3,5,6]&quot;);</span>
+
+<span class="fc" id="L348">        System.out.println(&quot;*Start: Path [1,3,5,7,8]&quot;);</span>
+<span class="fc" id="L349">        assertTrue(Printtokens.is_spec_symbol(']'));</span>
+<span class="fc" id="L350">        System.out.println(&quot;*End: Path [1,3,5,7,8]&quot;);</span>
+
+<span class="fc" id="L352">        System.out.println(&quot;*Start: Path [1,3,5,7,9,10]&quot;);</span>
+<span class="fc" id="L353">        assertTrue(Printtokens.is_spec_symbol('/'));</span>
+<span class="fc" id="L354">        System.out.println(&quot;*End: Path [1,3,5,7,9,10]&quot;);</span>
+
+<span class="fc" id="L356">        System.out.println(&quot;*Start: Path [1,3,5,7,9,11,12]&quot;);</span>
+<span class="fc" id="L357">        assertTrue(Printtokens.is_spec_symbol('`'));</span>
+<span class="fc" id="L358">        System.out.println(&quot;*End: Path [1,3,5,7,9,11,12]&quot;);</span>
+
+<span class="fc" id="L360">        System.out.println(&quot;*Start: Path [1,3,5,7,9,11,13,14]&quot;);</span>
+<span class="fc" id="L361">        assertTrue(Printtokens.is_spec_symbol(','));</span>
+<span class="fc" id="L362">        System.out.println(&quot;*End: Path [1,3,5,7,9,11,13,14]&quot;);</span>
+
+<span class="fc" id="L364">        System.out.println(&quot;*Start: Path [1,3,5,7,9,11,13,15]&quot;);</span>
+<span class="fc" id="L365">        assertFalse(Printtokens.is_spec_symbol('x'));</span>
+<span class="fc" id="L366">        System.out.println(&quot;*End: Path [1,3,5,7,9,11,13,15]&quot;);</span>
+       
+<span class="fc" id="L368">		System.out.println(&quot;=== Is Spec Symbol Finished. ===&quot;);</span>
+<span class="fc" id="L369">	}</span>
+
+	@Test
+	void testMain() throws IOException {
+<span class="fc" id="L373">	    System.out.println(&quot;=== Testing: Main ===&quot;);</span>
+	    
+<span class="fc" id="L375">	    Printtokens.main(new String[] {&quot;arg1&quot;, &quot;arg2&quot;});</span>
+<span class="fc" id="L376">	    assertTrue(outContent.toString().contains(&quot;Error! Please give the token stream&quot;));</span>
+
+	    // Test no arguments (Path [1,2,5,6,7,8])
+<span class="fc" id="L379">	    outContent.reset();</span>
+<span class="fc" id="L380">	    System.setIn(new ByteArrayInputStream(&quot;123&quot;.getBytes())); </span>
+<span class="fc" id="L381">	    Printtokens.main(new String[0]);</span>
+<span class="fc" id="L382">	    assertTrue(outContent.toString().contains(&quot;numeric,123&quot;));</span>
+
+	    // Test valid file input (Path [1,3,5,6,7,8])
+<span class="fc" id="L385">	    outContent.reset();</span>
+<span class="fc" id="L386">	    File tempFile = File.createTempFile(&quot;valid&quot;, &quot;.txt&quot;);</span>
+<span class="fc" id="L387">	    try (FileWriter writer = new FileWriter(tempFile)) {</span>
+<span class="fc" id="L388">	        writer.write(&quot;if&quot;);</span>
+	    }
+<span class="fc" id="L390">	    Printtokens.main(new String[]{tempFile.getAbsolutePath()});</span>
+<span class="fc" id="L391">	    assertTrue(outContent.toString().contains(&quot;keyword,\&quot;if\&quot;&quot;));</span>
+<span class="fc" id="L392">	    tempFile.delete();</span>
+
+<span class="fc" id="L394">	    System.out.println(&quot;=== Main Finished. ===&quot;);</span>
+<span class="fc" id="L395">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span>UnitTest (1) (Apr 27, 2025 4:18:33 PM)</div></body></html>
