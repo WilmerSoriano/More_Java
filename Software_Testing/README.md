@@ -1,11 +1,13 @@
 # Control-Flow Debugging: PrintTokens.java
+![alt text](image.png)
 
 This project performs control-flow testing on a fault-seeded Java program (`PrintTokens.java`). It demonstrates how to:
 
 1. Analyze program structure using Control Flow Graphs (CFGs).
 2. Design and execute test cases derived from control-flow paths.
 3. Identify, record, and correct implementation faults.
-4. Generate code coverage reports for unit and end-to-end testing.
+4. Generate code coverage reports for Unit testing: maximize edge coverage for all non-main methods.
+5. End-to-end testing: maximize edge coverage for all methods through the main method.
 
 ---
 
@@ -45,19 +47,35 @@ This project performs control-flow testing on a fault-seeded Java program (`Prin
 
 ## ⚙️ Environment Setup
 
-1. **Java SE 16**
-   Download and install from Oracle’s website (account required). Other Java 16+ versions may work.
+1. [Java SE 16](https://www.oracle.com/java/technologies/javase/jdk16-archive-downloads.html) (Need to create an account to download. This version is tested and other versions may work.)
 
-2. **Eclipse IDE (recommended)**
+2. [Eclipse IDE](https://riyagoel192.medium.com/how-to-download-eclipse-java-ide-on-windows-52608032d6d9) and [Jacoco](https://www.eclemma.org/installation.html#marketplace) through Eclipse IDE.
 
-   * **JUnit**: Add JUnit 5 to your project’s build path:
+* **JUnit**: Add JUnit 5 to your project’s build path:
 
      1. Right-click project → **Build Path > Configure Build Path**.
      2. **Libraries** tab → **Add Library** → **JUnit** → **Next**.
      3. Choose **JUnit 5** → **Finish** → **Apply and Close**.
    * **JaCoCo**: Install via Eclipse Marketplace for coverage reports.
+An example of Java Build Path with JUnit 5 added:
+![JUnit configuration](./assets/JUnit5.jpg)
 
-````
+---
+
+## Set up the Project Locally (Windows)
+
+**1**  **Launch** Eclipse IDE
+
+**2**  **Press** "**Ctrl+ALT+T**" to open the Terminal viewable in the IDE.
+
+**3**  **Clone** the GitHub project repository locally using the Terminal.
+  
+**4**  **Execute** the clone command to download the repository.
+  
+**5**  **Enter** the downloaded repository folder
+
+**6**  **Open** the project in Eclipse via "**File -> Open Projects from the File System...**" from the repository.
+
 
 ---
 
@@ -70,23 +88,21 @@ This project performs control-flow testing on a fault-seeded Java program (`Prin
 mvn test
 # or
 gradle test
-````
+```
 
 Results appear in `target/surefire-reports/` or `build/reports/tests/`.
 
-### Coverage Reports
-
-1. **Unit Coverage**
-
-In this case, all report and cases have be complete.
-* Please unzip file for Code Coverage Reports for EndToEnd or UnitTest.
-* Inside the folder you'll find  `index.html`. Click and a report will be demonstrated.
-
 ---
 
-## 📄 Deliverables
+## Coverage Reports : Final Results
 
-* **`PrintTokens.java`**: Fault-seeded source code.
-* **`PrintTokensTest.java`**: JUnit test suite.
-* **Coverage Reports**: `unit-coverage/index.html`, `e2e-coverage/index.html`.
+**📄 To check out Report/Result**
 
+In this case, all report and cases have be complete.
+* In the directory where you saved this repository go to ->**`Code Coverage Report EndToEnd`** -> Double click to * **`index.html`**
+* The same is done for **`Code Coverage Report UnitTest`**
+
+![Report on TestEndToEnd](./assets/report.png)
+
+* Running the main program bug-free:
+![MainProgram working](./assets/program.png)
